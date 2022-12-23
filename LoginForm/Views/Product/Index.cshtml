@@ -1,0 +1,132 @@
+﻿
+<table id="myTable">
+    <tr>
+        <th>Stok Kodu</th>
+        <th>Stok Adı</th>
+        <th>Stok</th>
+        <th>Fiyat</th>
+        <th>İskonto</th>
+        <th>İşlem</th>
+        <th>Miktar</th>
+    </tr>
+</table>
+
+<div id="id01" class="modal">
+    <form class="modal-content animate">
+        <div class="imgcontainer">
+            <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+            <img src="https://picsum.photos/200" alt="Avatar" class="avatar">
+        </div>
+
+        <div class="container">
+            <label for="stokKodu"><b>Stok Kodu</b></label>
+            <input type="text" id="stokKodu" required>
+
+            <label for="stokAdi"><b>Stok Adı</b></label>
+            <input type="text" id="stokAdi" required>
+
+            <label for="stok"><b>Stok</b></label>
+            <input type="text" id="stok" required>
+
+            <label for="fiyat"><b>Fiyat</b></label>
+            <input type="text" id="fiyat" required>
+
+            <label for="iskonto"><b>İskonto</b></label>
+            <input type="text" id="iskonto" required>
+
+            <label for="miktar"><b>Miktar</b></label>
+            <input type="text" id="miktar" required>
+
+            <button id="kaydet" s>Kaydet</button>
+
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var url = "https://api.akilliticaretim.com/api/Product/ListProducts/0";
+        var GUID = "0739-E657-C4F4-98B4";
+        var Token = getCookie("Token");
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            headers: {
+                "GUID": GUID,
+                "Authorization": "Bearer " + Token
+            },
+            contentType: "application/json",
+            success: function (result) {
+                $.each(result.data, function (index, value) {
+                    $("table").append(
+                        `<tr id="${index}">` +
+                        "<td>" + value.stockCode + "</td>" +
+                        "<td>" + value.name + "</td>" +
+                        "<td>" + value.stock + "</td>" +
+                        "<td>" + value.price + "</td>" +
+                        "<td>" + value.discountRate + "</td>" +
+                        `<td><button id="modal" class="btn" style="width:100px;" onclick="getProduct(${index});">Ürün Detayı</button></td>` +
+                        `<td><div class="counter">
+                                                                                        <span class="down" onClick='decreaseCount(event, this)'>-</span>
+                                                                                        <input id="counter" type="text" style="width:50px;" value="1" >
+                                                                                        <span class="up" onClick='increaseCount(event, this)'>+</span>
+                                                                                        </div>
+                                                                                </td>`+
+                        "</tr>");
+                });
+            },
+            error: function (xhr, status, error) {
+                alert("Hata : " + error);
+            }
+        });
+    });
+
+    function getProduct(id) {
+        document.getElementById('id01').style.display = 'block';
+
+        var stokCode = $(`#${id}`).children("td:eq(0)").text();
+        $("#stokKodu").val(stokCode);
+
+        var name = $(`#${id}`).children("td:eq(1)").text();
+        $("#stokAdi").val(name);
+
+        var stok = $(`#${id}`).children("td:eq(2)").text();
+        $("#stok").val(stok);
+
+        var price = $(`#${id}`).children("td:eq(3)").text();
+        $("#fiyat").val(price);
+
+        var iskonto = $(`#${id}`).children("td:eq(4)").text();
+        $("#iskonto").val(iskonto);
+
+        var miktar = $("#counter").val();
+        $("#miktar").val(miktar);
+
+    }
+
+    function getCookie(key) {
+        var keyValue = document.cookie.match('(^|;) ?' + key + '=([^;]*)(;|$)');
+        return keyValue ? keyValue[2] : null;
+    }
+
+    function increaseCount(a, b) {
+        var input = b.previousElementSibling;
+        var value = parseInt(input.value, 10);
+        value = isNaN(value) ? 0 : value;
+        value++;
+        input.value = value;
+    }
+    function decreaseCount(a, b) {
+        var input = b.nextElementSibling;
+        var value = parseInt(input.value, 10);
+        if (value > 1) {
+            value = isNaN(value) ? 0 : value;
+            value--;
+            input.value = value;
+        }
+    }
+
+</script>
+
+
